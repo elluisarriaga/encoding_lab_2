@@ -1,0 +1,84 @@
+#include <stdio.h>
+#include <ctype.h>
+#include <math.h> 
+
+void encode(const char *original, char *encoded)
+{
+    int j=1; //Number of times the letter is repeated. Always starts with one.
+	int i=0; //Counter of the orginal string.
+	int k=0; //Position of the encoded.
+	int pt=0;
+	for (; original[i] != '\0'; i++) { //It will run until the end of the string
+		if (original[i] == original[i+1]){ //It will check if the current letter is equal to the next one. If TRUE then add 1 to the variable "j"
+			j++;	
+		}
+		else if (j == 1) { //If the counter "j" is equal to 1, it means that the current letter is not repeated
+			encoded[k]=original[i]; //Puts the letter in the encoded string
+			k++; //Gives the next position of the string "encoded"
+		}
+		else if (j>=10) { //Case when a letter is repeated more than 10 times.
+			pt=floor(j/10); //It will obtain the first number.
+			encoded[k]= '0' + pt; 
+			k++; //Gives next position of the string "encoded"
+			j %= 10; //The remainder will be the new "j" so it can now print the second digit of the number, it will be lower than 10, so it will go to the final "else"
+			i-=1; //This allows to stay in the same letter and work with the second digit. If you erease it, it will skip the second digit and therefore won't work.
+		}
+		else { //If "j"is lower than 10
+			encoded[k]= '0' + j;
+			k++;
+			encoded[k]= original[i]; //Print the letter
+			k++;
+			j= 1; //Go back to one so it can count the number of the next letter.
+		}
+	}
+	encoded[k]='\0'; //It will close the string, otherwise random characters appear on the screen.
+}
+
+void decode(const char *encoded, char *decoded)
+{
+int j=0; //Variable for the decoded
+char wrd; //Variable for the letter to be written
+int a=0; //Variable for the number of times the letter will be repeated
+int b=0; //Variable for the number of times the letter will be repeated (in case of 2 numbers)
+int c=0; //Variable for the number of times the letter will be repeated (in case of 2 numbers)
+int i=0; //Counter of the encoded string
+int h=0;
+	while (encoded[i] != '\0'){ //It will run until the string "encoded" ends.
+     if (isdigit(encoded[i])==0) { //This condition is for when the letter only appears once.
+        decoded[j]=encoded[i]; 
+        j++; //Next space in the "decoded" string
+        i++; //Next space in the "encoded" string
+}
+    else if (isdigit(encoded[i])==1){
+    a= encoded[i]-'0'; //It will take the number and pass it from char to int, according to the ASCII table
+    c= a; //It will keep the value, and modify in case the number has two digits.
+    wrd= encoded[i+1]; //Will keep the character next to the number, in case of a two digit number it will change it in the next cicle.
+    	if (isdigit(encoded[i+1])==1){
+    		a= 10*(encoded[i] -'0'); //Decimal part of the number
+    		b= encoded[i+1] -'0';
+    		c= a + b; //Number of times that the letter will be repeated (two digit number).
+    		wrd= encoded[i+2]; //Before it keeped a number, but now it changes to the letter to be written
+    		i++; //Add one to the "encoded" counter
+		}	
+		i++;
+		h=c+j-1; //To keep track of the position we add the number of times the letter will be repeated and the current string position.	
+		for (j; j!=h;j++){
+			decoded[j]=wrd; //Will print the letter
+		}
+	}	
+} //End for
+decoded[j]='\0'; //It will end the decoder so no random letter appear
+}
+
+int main(void)
+{
+//	const char original[100]= "WWWWWWWWWWWWBWWWWWWWWWWWWBBBWWWWWWWWWWWWWWWWWWWWWWWWB"; //12W B 12W 3B 24W B
+const char original[100]= "ABBCCCDDQQHHHHDD"; 
+	char encoded[100];
+	char decoded[100];
+	printf("Original: %s\n", original);
+	encode(original, encoded);
+	printf("Encoded: %s\n", encoded);
+	decode(encoded, decoded);
+	printf("Decoded: %s\n", decoded);
+}
